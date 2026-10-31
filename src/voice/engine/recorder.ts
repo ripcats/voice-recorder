@@ -180,13 +180,18 @@ export class VoiceRecorder {
     if (!encoder || encoder.state !== 'configured' || !samples.length) {
       return;
     }
+    const audioSamples = new Float32Array(
+      new ArrayBuffer(samples.length * Float32Array.BYTES_PER_ELEMENT)
+    );
+    audioSamples.set(samples);
+
     const audio = new AudioData({
       format: 'f32-planar',
       sampleRate: this.sampleRate,
       numberOfFrames: samples.length,
       numberOfChannels: 1,
       timestamp: Math.round((this.frames / this.sampleRate) * 1e6),
-      data: samples,
+      data: audioSamples,
     });
     this.frames += samples.length;
     encoder.encode(audio);
